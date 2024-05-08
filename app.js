@@ -23,7 +23,7 @@ app.get('/fetch-airport', async (req, res) => {
         const data = await response.json();
         skyId = data[0]['skyId'];
         entityId = data[0]['entityId'];
-        let arr = {"skyId": skyId, "entityId": entityId};
+        let arr = {"skyId": skyId, "entityId": entityId}; // Puts the skyId and entityId into an object
         if (response.ok) {
             res.json(arr);  // Send the JSON response back to the Chrome extension
         } else {
