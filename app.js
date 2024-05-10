@@ -35,14 +35,20 @@ app.get('/fetch-airport', async (req, res) => {
     }
 });
 
-app.get('/retrieve-flights', async (skyId, entityId, res) => {
-    const url = `https://app.goflightlabs.com/retrieveFlights?access_key=${APIKEY}&originSkyId=${skyId}&destinationSkyId=NYCA&originEntityId=${entityId}&destinationEntityId=27537542&date=2024-05-10`
+app.get('/retrieve-flights', async (req, res) => {
+    const { originSkyId, destinationSkyId, originEntityId, destinationEntityId, date } = req.query;
+    
+    if (!originSkyId || !destinationSkyId || !originEntityId || !destinationEntityId || !date) {
+        return res.status(400).json({ error: "Missing required parameters" });
+    }
+    const url = `https://app.goflightlabs.com/retrieveFlights?access_key=${APIKEY}&originSkyId=${originSkyId}&destinationSkyId=${destinationSkyId}&originEntityId=${originEntityId}&destinationEntityId=${destinationEntityId}&date=${date}`;
 
     try {
         const response = await fetch(url)
         const data = await response.json();
+        let price = {raw: data['itineraries'][0]['price']['raw'], formatted: data['itineraries'][0]['price']['formatted']};
         if (response.ok) {
-            response.json(data);
+            res.json(price);
         } else {
             throw new Error(`API call failed with status: ${response.status}`); 
         }
